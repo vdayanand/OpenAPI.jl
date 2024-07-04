@@ -63,7 +63,6 @@ function find_pets_by_status_read(handler)
     function find_pets_by_status_read_handler(req::HTTP.Request)
         openapi_params = Dict{String,Any}()
         query_params = HTTP.queryparams(URIs.URI(req.target))
-        @info ">>>>>>>>>>>>>>" query_params
         openapi_params["status"] = OpenAPI.Servers.to_param(Vector{String}, query_params, "status", required=true, )
         req.context[:openapi_params] = openapi_params
 
