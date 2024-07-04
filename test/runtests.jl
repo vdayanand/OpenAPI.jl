@@ -9,7 +9,7 @@ include("forms/forms_client.jl")
 include("client/timeouttest/runtests.jl")
 
 @testset "OpenAPI" begin
-    include("param_serialize.jl")
+    include("param_deserialize.jl")
     @testset "ModelGen" begin
         TestModelGen.runtests()
     end

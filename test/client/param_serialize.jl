@@ -1,3 +1,4 @@
+using OpenAPI.Clients: serialize_to_query_dict
 @testset "Test serialize_to_query_dict" begin
     @testset "Single level object" begin
         dict = Dict("key1" => "value1", "key2" => "value2")
