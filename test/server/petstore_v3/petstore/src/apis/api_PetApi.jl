@@ -15,7 +15,7 @@ end
 function add_pet_validate(handler)
     function add_pet_validate_handler(req::HTTP.Request)
         openapi_params = req.context[:openapi_params]
-        
+
         return handler(req)
     end
 end
@@ -45,7 +45,7 @@ end
 function delete_pet_validate(handler)
     function delete_pet_validate_handler(req::HTTP.Request)
         openapi_params = req.context[:openapi_params]
-        
+
         return handler(req)
     end
 end
@@ -63,6 +63,7 @@ function find_pets_by_status_read(handler)
     function find_pets_by_status_read_handler(req::HTTP.Request)
         openapi_params = Dict{String,Any}()
         query_params = HTTP.queryparams(URIs.URI(req.target))
+        @info ">>>>>>>>>>>>>>" query_params
         openapi_params["status"] = OpenAPI.Servers.to_param(Vector{String}, query_params, "status", required=true, )
         req.context[:openapi_params] = openapi_params
 
@@ -73,7 +74,7 @@ end
 function find_pets_by_status_validate(handler)
     function find_pets_by_status_validate_handler(req::HTTP.Request)
         openapi_params = req.context[:openapi_params]
-        
+
         return handler(req)
     end
 end
@@ -101,7 +102,7 @@ end
 function find_pets_by_tags_validate(handler)
     function find_pets_by_tags_validate_handler(req::HTTP.Request)
         openapi_params = req.context[:openapi_params]
-        
+
         return handler(req)
     end
 end
@@ -129,7 +130,7 @@ end
 function get_pet_by_id_validate(handler)
     function get_pet_by_id_validate_handler(req::HTTP.Request)
         openapi_params = req.context[:openapi_params]
-        
+
         return handler(req)
     end
 end
@@ -156,7 +157,7 @@ end
 function update_pet_validate(handler)
     function update_pet_validate_handler(req::HTTP.Request)
         openapi_params = req.context[:openapi_params]
-        
+
         return handler(req)
     end
 end
@@ -188,7 +189,7 @@ end
 function update_pet_with_form_validate(handler)
     function update_pet_with_form_validate_handler(req::HTTP.Request)
         openapi_params = req.context[:openapi_params]
-        
+
         return handler(req)
     end
 end
@@ -220,7 +221,7 @@ end
 function upload_file_validate(handler)
     function upload_file_validate_handler(req::HTTP.Request)
         openapi_params = req.context[:openapi_params]
-        
+
         return handler(req)
     end
 end

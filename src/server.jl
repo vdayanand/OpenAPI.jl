@@ -3,7 +3,7 @@ module Servers
 using JSON
 using HTTP
 
-import ..OpenAPI: APIModel, ValidationException, from_json, to_json
+import ..OpenAPI: APIModel, ValidationException, from_json, to_json, convert_dicts_to_arrays
 
 function middleware(impl, read, validate, invoke;
         init=nothing,
@@ -29,6 +29,42 @@ end
 ##############################
 # server parameter conversions
 ##############################
+struct Param
+    keylist::Vector{String}
+    value::String
+end
+
+function parse_query_dict(query_dict::Dict{String, String})::Vector{Param}
+    params = Vector{Param}()
+    for (key, value) in query_dict
+        parts = split(replace(key, r"\[" => "\0", r"\]" => ""), '\0')
+        keylist = parts
+        push!(params, Param(keylist, value))
+    end
+
+    return params
+end
+
+function convert_to_dict(params::Vector{Param})::Dict{String, Any}
+    deserialized_dict = Dict{String, Any}()
+
+    for param in params
+        current = deserialized_dict
+        for part in param.keylist[1:end-1]
+            if !haskey(current, part)
+                current[part] = Dict{String, Any}()
+            end
+            current = current[part]
+        end
+        current[param.keylist[end]] = param.value
+    end
+    return deserialized_dict
+end
+
+function deserialize_deep_object(qp::Dict)
+    convert_to_dict(parse_query_dict(qp))
+end
+
 function get_param(source::Dict, name::String, required::Bool)
     val = get(source, name, nothing)
     if required && isnothing(val)
@@ -49,35 +85,58 @@ function get_param(source::Vector{HTTP.Forms.Multipart}, name::String, required:
 end
 
 
-function to_param_type(::Type{T}, strval::String) where {T <: Number}
+function to_param_type(::Type{T}, strval::String; stylectx=nothing) where {T <: Number}
     parse(T, strval)
 end
 
-to_param_type(::Type{T}, val::T) where {T} = val
-to_param_type(::Type{T}, ::Nothing) where {T} = nothing
-to_param_type(::Type{String}, val::Vector{UInt8}) = String(copy(val))
-to_param_type(::Type{Vector{UInt8}}, val::String) = convert(Vector{UInt8}, copy(codeunits(val)))
-to_param_type(::Type{Vector{T}}, val::Vector{T}, _collection_format::Union{String,Nothing}) where {T} = val
+to_param_type(::Type{T}, val::T; stylectx=nothing) where {T} = val
+to_param_type(::Type{T}, ::Nothing; stylectx=nothing) where {T} = nothing
+to_param_type(::Type{String}, val::Vector{UInt8}; stylectx=nothing) = String(copy(val))
+to_param_type(::Type{Vector{UInt8}}, val::String; stylectx=nothing) = convert(Vector{UInt8}, copy(codeunits(val)))
+to_param_type(::Type{Vector{T}}, val::Vector{T}, _collection_format::Union{String,Nothing}; stylectx=nothing) where {T} = val
+to_param_type(::Type{Vector{T}}, json::Vector{Any}; stylectx=nothing) where {T} = [to_param_type(T, x; stylectx) for x in json]
 
-function to_param_type(::Type{T}, strval::String) where {T <: APIModel}
-    from_json(T, JSON.parse(strval))
+function to_param_type(::Type{Vector{T}}, json::Dict{String, Any}; stylectx=nothing) where {T <: APIModel}
+    if !isnothing(stylectx) && stylectx.name == "deepObject" && stylectx.is_explode
+        cvt = convert_dicts_to_arrays(json)
+        if isa(cvt, Vector)
+            to_param_type(Vector{T}, cvt; stylectx)
+        else
+            to_param_type(T, json; stylectx)
+        end
+    else
+        to_param_type(T, json; stylectx)
+    end
 end
 
-function to_param_type(::Type{T}, json::Dict{String,Any}) where {T <: APIModel}
-    from_json(T, json)
+function to_param_type(::Type{T}, strval::String; stylectx=nothing) where {T <: APIModel}
+    from_json(T, JSON.parse(strval); stylectx)
 end
 
-function to_param_type(::Type{Vector{T}}, strval::String, delim::String) where {T}
+function  to_param_type(::Type{T}, json::Dict{String,Any}; stylectx=nothing) where {T <: APIModel}
+    from_json(T, json; stylectx)
+end
+
+function to_param_type(::Type{Vector{T}}, strval::String, delim::String; stylectx=nothing) where {T}
     elems = string.(strip.(split(strval, delim)))
-    return map(x->to_param_type(T, x), elems)
+    return map(x->to_param_type(T, x; stylectx), elems)
 end
 
-function to_param_type(::Type{Vector{T}}, strval::String) where {T}
+function to_param_type(::Type{Vector{T}}, strval::String; stylectx=nothing) where {T}
     elems = JSON.parse(strval)
-    return map(x->to_param_type(T, x), elems)
+    return map(x->to_param_type(T, x; stylectx), elems)
 end
 
-function to_param(T, source::Dict, name::String; required::Bool=false, collection_format::Union{String,Nothing}=",", multipart::Bool=false, isfile::Bool=false)
+struct StyleCtx
+    name::String
+    is_explode::Bool
+end
+
+function to_param(T, source::Dict, name::String; required::Bool=false, collection_format::Union{String,Nothing}=",", multipart::Bool=false, isfile::Bool=false, style::String="form", is_explode::Bool=true)
+    deep_explode = style == "deepObject" && is_explode
+    if deep_explode
+        source = deserialize_deep_object(source)
+    end
     param = get_param(source, name, required)
     if param === nothing
         return nothing
@@ -86,10 +145,13 @@ function to_param(T, source::Dict, name::String; required::Bool=false, collectio
         # param is a Multipart
         param = isfile ? param.data : String(param.data)
     end
+    if deep_explode
+        return to_param_type(T, param; stylectx=StyleCtx(style, is_explode))
+    end
     if T <: Vector
-        return to_param_type(T, param, collection_format)
+        to_param_type(T, param, collection_format)
     else
-        return to_param_type(T, param)
+        to_param_type(T, param)
     end
 end
 

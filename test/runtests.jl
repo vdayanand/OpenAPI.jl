@@ -9,6 +9,7 @@ include("forms/forms_client.jl")
 include("client/timeouttest/runtests.jl")
 
 @testset "OpenAPI" begin
+    include("param_serialize.jl")
     @testset "ModelGen" begin
         TestModelGen.runtests()
     end
@@ -42,7 +43,7 @@ include("client/timeouttest/runtests.jl")
                 servers_running &= wait_server(8080)
                 servers_running &= wait_server(8081)
             else
-                servers_running = false                
+                servers_running = false
             end
             servers_running && OpenAPIClientTests.runtests(; test_file_upload=true)
         finally
@@ -68,7 +69,7 @@ include("client/timeouttest/runtests.jl")
                 v3_ret, v3_out = run_server(joinpath(@__DIR__, "server", "openapigenerator_petstore_v3", "petstore_server.jl"))
                 servers_running &= wait_server(8081)
             else
-                servers_running = false                
+                servers_running = false
             end
             servers_running && OpenAPIClientTests.run_openapigenerator_tests(; test_file_upload=true)
         finally
@@ -177,5 +178,6 @@ include("client/timeouttest/runtests.jl")
         end
     end
     run_tests_with_servers && sleep(20) # avoid port conflicts
+
 
 end
