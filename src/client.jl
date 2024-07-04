@@ -292,7 +292,12 @@ function set_header_content_type(ctx::Ctx, ctypes::Vector{String})
 end
 
 set_param(params::Dict{String,String}, name::String, value::Nothing; collection_format=",") = nothing
-function set_param(params::Dict{String,String}, name::String, value; collection_format=",")
+function set_param(params::Dict{String,String}, name::String, value; collection_format=",", style="form", is_explode=false)
+    deep_explode = style == "deepObject" && is_explode
+    if deep_explode
+        params[name] = value
+        params = deep_serialize_queryparams(params)
+    end
     if isa(value, Dict)
         # implements the default serialization (style=form, explode=true, location=queryparams)
         # as mentioned in https://swagger.io/docs/specification/serialization/
