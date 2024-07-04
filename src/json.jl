@@ -39,7 +39,7 @@ struct StyleCtx
     is_explode::Bool
 end
 
-is_deep_explode(sctx::StyleCtx) = sctx.style == "deepObject" && sctx.is_explode
+is_deep_explode(sctx::StyleCtx) = sctx.name == "deepObject" && sctx.is_explode
 
 function convert_dicts_to_arrays(v)
     keys_are_int = all(key -> occursin(r"^\d+$", key), keys(v))

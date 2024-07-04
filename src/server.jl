@@ -3,7 +3,7 @@ module Servers
 using JSON
 using HTTP
 
-import ..OpenAPI: APIModel, ValidationException, from_json, to_json, convert_dicts_to_arrays, StyleCtx
+import ..OpenAPI: APIModel, ValidationException, from_json, to_json, convert_dicts_to_arrays, StyleCtx, is_deep_explode
 
 function middleware(impl, read, validate, invoke;
         init=nothing,
