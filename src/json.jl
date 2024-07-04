@@ -66,7 +66,7 @@ from_json(::Type{Vector{T}}, j::Vector{Any}; stylectx=nothing) where {T} = j
 
 function from_json(::Type{Vector{T}}, json::Dict{String, Any}; stylectx=nothing) where {T}
     if !isnothing(stylectx) && is_deep_explode(stylectx)
-        cvt = convert_dicts_to_arrays(json)
+        cvt = convert_dict_to_array(json)
         if isa(cvt, Vector)
             return from_json(Vector{T}, cvt; stylectx)
         else
