@@ -38,6 +38,12 @@ using OpenAPI: convert_dicts_to_arrays
         @test deserialize_deep_object(query_string) == expected
     end
 
+    @testset "convert_dicts_to_arrays" begin
+        example = Dict("a" => Dict("b" => "value1", "c" => Dict("0"=>"value2", "1"=>"value3")))
+        @test convert_dicts_to_arrays(example) == example
+        @test convert_dicts_to_arrays(example["a"]["c"]) == ["value2", "value3"]
+    end
+
     @testset "Blank values" begin
         query_string = Dict("a[b]"=>"", "a[c]"=>"")
         expected = Dict("a" => Dict("b" => "", "c" => ""))
