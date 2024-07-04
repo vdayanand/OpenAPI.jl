@@ -77,7 +77,7 @@ end
 
 function get_api_return_type(return_types::Dict{Regex,Type}, ::Nothing, response_data::String)
     # this is the async case, where we do not have the response code yet
-    # in such cases we look for the 200 response code 
+    # in such cases we look for the 200 response code
     return get_api_return_type(return_types, 200, response_data)
 end
 function get_api_return_type(return_types::Dict{Regex,Type}, response_code::Integer, response_data::String)
@@ -191,7 +191,7 @@ set_user_agent(client::Client, ua::String) = set_header(client, "User-Agent", ua
 Set the Cookie header to be sent with all API calls.
 """
 set_cookie(client::Client, ck::String) = set_header(client, "Cookie", ck)
-    
+
 """
     set_header(client::Client, name::String, value::String)
 
@@ -789,7 +789,7 @@ function storefile(api_call::Function;
     folder::AbstractString = pwd(),
     filename::Union{String,Nothing} = nothing,
     )::Tuple{Any,ApiResponse,String}
-    
+
     result, http_response = api_call()
 
     if isnothing(filename)
@@ -827,5 +827,23 @@ function extract_filename(resp::Downloads.Response)::String
     content_type_str = header(resp, "content-type", "")
     return string("response", extension_from_mime(MIME(content_type_str)))
 end
+
+function deep_serialize_queryparams(dict::Dict, parent_key::String = "")::String
+    parts = String[]
+    for (key, value) in dict
+        new_key = parent_key == "" ? key : "$parent_key[$key]"
+        if isa(value, Dict)
+            push!(parts, deep_serialize_queryparams(value, new_key))
+        elseif isa(value, Vector)
+            for (i, v) in enumerate(value)
+                push!(parts, "$new_key[$(i-1)]=$v")
+            end
+        else
+            push!(parts, "$new_key=$value")
+        end
+    end
+    return join(sort(parts), "&")
+end
+
 
 end # module Clients
