@@ -295,8 +295,8 @@ set_param(params::Dict{String,String}, name::String, value::Nothing; collection_
 function set_param(params::Dict{String,String}, name::String, value; collection_format=",", style="form", is_explode=false)
     deep_explode = style == "deepObject" && is_explode
     if deep_explode
-        params[name] = value
-        params = deep_serialize_queryparams(params)
+        merge!(params, serialize_to_query_dict(Dict(name=>value)))
+        return params
     end
     if isa(value, Dict)
         # implements the default serialization (style=form, explode=true, location=queryparams)
@@ -833,22 +833,21 @@ function extract_filename(resp::Downloads.Response)::String
     return string("response", extension_from_mime(MIME(content_type_str)))
 end
 
-function deep_serialize_queryparams(dict::Dict, parent_key::String = "")::String
-    parts = String[]
+function serialize_to_query_dict(dict::Dict, parent_key::String = "")
+    parts = Pair[]
     for (key, value) in dict
         new_key = parent_key == "" ? key : "$parent_key[$key]"
         if isa(value, Dict)
-            push!(parts, deep_serialize_queryparams(value, new_key))
+            append!(parts, collect(serialize_to_query_dict(value, new_key)))
         elseif isa(value, Vector)
             for (i, v) in enumerate(value)
-                push!(parts, "$new_key[$(i-1)]=$v")
+                push!(parts, "$new_key[$(i-1)]"=>"$v")
             end
         else
-            push!(parts, "$new_key=$value")
+            push!(parts, "$new_key"=>"$value")
         end
     end
-    return join(sort(parts), "&")
+    return Dict(parts)
 end
-
 
 end # module Clients
