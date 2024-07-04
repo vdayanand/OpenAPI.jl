@@ -34,6 +34,13 @@ function lower(o::T) where {T<:UnionAPIModel}
     end
 end
 
+struct StyleCtx
+    name::String
+    is_explode::Bool
+end
+
+is_deep_explode(sctx::StyleCtx) = sctx.style == "deepObject" && sctx.is_explode
+
 function convert_dicts_to_arrays(v)
     keys_are_int = all(key -> occursin(r"^\d+$", key), keys(v))
     if keys_are_int
@@ -58,7 +65,7 @@ from_json(::Type{Any}, j::Dict{String,Any}; stylectx=nothing) = j
 from_json(::Type{Vector{T}}, j::Vector{Any}; stylectx=nothing) where {T} = j
 
 function from_json(::Type{Vector{T}}, json::Dict{String, Any}; stylectx=nothing) where {T}
-    if !isnothing(stylectx) && stylectx.name == "deepObject" && stylectx.is_explode
+    if !isnothing(stylectx) && is_deep_explode(stylectx)
         cvt = convert_dicts_to_arrays(json)
         if isa(cvt, Vector)
             return from_json(Vector{T}, cvt; stylectx)

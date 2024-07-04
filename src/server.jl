@@ -3,7 +3,7 @@ module Servers
 using JSON
 using HTTP
 
-import ..OpenAPI: APIModel, ValidationException, from_json, to_json, convert_dicts_to_arrays
+import ..OpenAPI: APIModel, ValidationException, from_json, to_json, convert_dicts_to_arrays, StyleCtx
 
 function middleware(impl, read, validate, invoke;
         init=nothing,
@@ -97,7 +97,7 @@ to_param_type(::Type{Vector{T}}, val::Vector{T}, _collection_format::Union{Strin
 to_param_type(::Type{Vector{T}}, json::Vector{Any}; stylectx=nothing) where {T} = [to_param_type(T, x; stylectx) for x in json]
 
 function to_param_type(::Type{Vector{T}}, json::Dict{String, Any}; stylectx=nothing) where {T <: APIModel}
-    if !isnothing(stylectx) && stylectx.name == "deepObject" && stylectx.is_explode
+    if !isnothing(stylectx) && is_deep_explode(stylectx)
         cvt = convert_dicts_to_arrays(json)
         if isa(cvt, Vector)
             to_param_type(Vector{T}, cvt; stylectx)
@@ -125,11 +125,6 @@ end
 function to_param_type(::Type{Vector{T}}, strval::String; stylectx=nothing) where {T}
     elems = JSON.parse(strval)
     return map(x->to_param_type(T, x; stylectx), elems)
-end
-
-struct StyleCtx
-    name::String
-    is_explode::Bool
 end
 
 function to_param(T, source::Dict, name::String; required::Bool=false, collection_format::Union{String,Nothing}=",", multipart::Bool=false, isfile::Bool=false, style::String="form", is_explode::Bool=true)
