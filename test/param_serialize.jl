@@ -1,7 +1,7 @@
 module ParamSerialization
 using Test
 using OpenAPI.Servers: deserialize_deep_object
-using OpenAPI: convert_dicts_to_arrays
+using OpenAPI: convert_dict_to_array
 @testset "Test deserialize_deep_object" begin
     @testset "Single level object" begin
         query_string = Dict("key1" => "value1", "key2" => "value2")
@@ -41,12 +41,12 @@ using OpenAPI: convert_dicts_to_arrays
         @test deserialize_deep_object(query_string) == expected
     end
 
-    @testset "convert_dicts_to_arrays" begin
+    @testset "convert_dict_to_array" begin
         example = Dict(
             "a" => Dict("b" => "value1", "c" => Dict("0" => "value2", "1" => "value3")),
         )
-        @test convert_dicts_to_arrays(example) == example
-        @test convert_dicts_to_arrays(example["a"]["c"]) == ["value2", "value3"]
+        @test convert_dict_to_array(example) == example
+        @test convert_dict_to_array(example["a"]["c"]) == ["value2", "value3"]
     end
 
     @testset "Blank values" begin

@@ -41,17 +41,17 @@ end
 
 is_deep_explode(sctx::StyleCtx) = sctx.name == "deepObject" && sctx.is_explode
 
-function convert_dicts_to_arrays(v)
-    keys_are_int = all(key -> occursin(r"^\d+$", key), keys(v))
+function convert_dict_to_array(src::Dict)
+    keys_are_int = all(key -> occursin(r"^\d+$", key), keys(src))
     if keys_are_int
-        sorted_keys = sort(collect(keys(v)), by=x->parse(Int, x))
+        sorted_keys = sort(collect(keys(src)), by=x->parse(Int, x))
         final = []
         for key in sorted_keys
-            push!(final, v[key])
+            push!(final, src[key])
         end
         return final
     else
-        v
+        src
     end
 end
 

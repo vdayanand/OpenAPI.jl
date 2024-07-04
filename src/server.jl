@@ -3,7 +3,7 @@ module Servers
 using JSON
 using HTTP
 
-import ..OpenAPI: APIModel, ValidationException, from_json, to_json, convert_dicts_to_arrays, StyleCtx, is_deep_explode
+import ..OpenAPI: APIModel, ValidationException, from_json, to_json, convert_dict_to_array, StyleCtx, is_deep_explode
 
 function middleware(impl, read, validate, invoke;
         init=nothing,
@@ -98,7 +98,7 @@ to_param_type(::Type{Vector{T}}, json::Vector{Any}; stylectx=nothing) where {T} 
 
 function to_param_type(::Type{Vector{T}}, json::Dict{String, Any}; stylectx=nothing) where {T <: APIModel}
     if !isnothing(stylectx) && is_deep_explode(stylectx)
-        cvt = convert_dicts_to_arrays(json)
+        cvt = convert_dict_to_array(json)
         if isa(cvt, Vector)
             to_param_type(Vector{T}, cvt; stylectx)
         else
