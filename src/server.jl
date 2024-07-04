@@ -37,7 +37,9 @@ end
 function parse_query_dict(query_dict::Dict{String, String})::Vector{Param}
     params = Vector{Param}()
     for (key, value) in query_dict
-        parts = split(replace(key, r"\[" => "\0", r"\]" => ""), '\0')
+        key = replace(key, r"\[" => '\0')
+        key = replace(key, r"\]" => "")
+        parts = split(key, '\0')
         keylist = parts
         push!(params, Param(keylist, value))
     end
