@@ -1,5 +1,5 @@
-name = "deepserver"
-uuid = "da2a7600-cb39-4a58-9fe9-0474d945a323"
+name = "DeepClient"
+uuid = "ec5541f9-9c84-42fb-98f2-58276103ad1d"
 authors = ["vdayanand <venkatesh@juliacomputing.com>"]
 version = "0.1.0"
 
