@@ -1,10 +1,12 @@
-module DeepObjectServerTest
-include("deep_server/src/deep.jl")
-using .deep
+module DeepServerTest
+include("DeepServer/src/DeepServer.jl")
+using .DeepServer
 using HTTP
-using .deep: register
+using .DeepServer: register
+
 const server = Ref{Any}(nothing)
-function find_pets_by_status(::HTTP.Messages.Request, param::deep.FindPetsByStatusStatusParameter)
+
+function find_pets_by_status(::HTTP.Messages.Request, param::DeepServer.FindPetsByStatusStatusParameter)
     return param
 end
 
@@ -20,4 +22,4 @@ function run_server(port=8081)
 end
 
 end # module DeepObjectClientTest
-DeepObjectServerTest.run_server()
+DeepServerTest.run_server()
