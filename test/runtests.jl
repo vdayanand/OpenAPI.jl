@@ -7,6 +7,7 @@ include("client/runtests.jl")
 include("client/allany/runtests.jl")
 include("forms/forms_client.jl")
 include("client/timeouttest/runtests.jl")
+include("deep_object/runtests.jl")
 
 @testset "OpenAPI" begin
     include("param_deserialize.jl")
