@@ -12,7 +12,7 @@ This can be used to construct the `OpenAPI.Clients.Client` instance.
 basepath(::Type{ PetApi }) = "http://petstore.swagger.io/v2"
 
 const _returntypes_find_pets_by_status_PetApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => FindPetsByStatus200Response,
+    Regex("^" * replace("200", "x"=>".") * "\$") => FindPetsByStatusStatusParameter,
     Regex("^" * replace("400", "x"=>".") * "\$") => Nothing,
 )
 
@@ -31,7 +31,7 @@ Multiple status values can be provided with comma separated strings
 Params:
 - status::FindPetsByStatusStatusParameter (required)
 
-Return: FindPetsByStatus200Response, OpenAPI.Clients.ApiResponse
+Return: FindPetsByStatusStatusParameter, OpenAPI.Clients.ApiResponse
 """
 function find_pets_by_status(_api::PetApi, status::FindPetsByStatusStatusParameter; _mediaType=nothing)
     _ctx = _oacinternal_find_pets_by_status(_api, status; _mediaType=_mediaType)

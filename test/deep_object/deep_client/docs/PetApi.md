@@ -8,8 +8,8 @@ Method | HTTP request | Description
 
 
 # **find_pets_by_status**
-> find_pets_by_status(_api::PetApi, status::FindPetsByStatusStatusParameter; _mediaType=nothing) -> FindPetsByStatus200Response, OpenAPI.Clients.ApiResponse <br/>
-> find_pets_by_status(_api::PetApi, response_stream::Channel, status::FindPetsByStatusStatusParameter; _mediaType=nothing) -> Channel{ FindPetsByStatus200Response }, OpenAPI.Clients.ApiResponse
+> find_pets_by_status(_api::PetApi, status::FindPetsByStatusStatusParameter; _mediaType=nothing) -> FindPetsByStatusStatusParameter, OpenAPI.Clients.ApiResponse <br/>
+> find_pets_by_status(_api::PetApi, response_stream::Channel, status::FindPetsByStatusStatusParameter; _mediaType=nothing) -> Channel{ FindPetsByStatusStatusParameter }, OpenAPI.Clients.ApiResponse
 
 Finds Pets by status
 
@@ -24,7 +24,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**FindPetsByStatus200Response**](FindPetsByStatus200Response.md)
+[**FindPetsByStatusStatusParameter**](FindPetsByStatusStatusParameter.md)
 
 ### Authorization
 

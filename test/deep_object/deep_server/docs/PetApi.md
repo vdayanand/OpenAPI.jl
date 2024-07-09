@@ -8,7 +8,7 @@ Method | HTTP request | Description
 
 
 # **find_pets_by_status**
-> find_pets_by_status(req::HTTP.Request, status::FindPetsByStatusStatusParameter;) -> FindPetsByStatus200Response
+> find_pets_by_status(req::HTTP.Request, status::FindPetsByStatusStatusParameter;) -> FindPetsByStatusStatusParameter
 
 Finds Pets by status
 
@@ -23,7 +23,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**FindPetsByStatus200Response**](FindPetsByStatus200Response.md)
+[**FindPetsByStatusStatusParameter**](FindPetsByStatusStatusParameter.md)
 
 ### Authorization
 

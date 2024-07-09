@@ -25,7 +25,6 @@ Class | Method
 
 ## Models
 
- - [FindPetsByStatus200Response](docs/FindPetsByStatus200Response.md)
  - [FindPetsByStatusStatusParameter](docs/FindPetsByStatusStatusParameter.md)
 
 
