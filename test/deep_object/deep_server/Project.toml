@@ -1,4 +1,4 @@
-name = "deep"
+name = "deepserver"
 uuid = "da2a7600-cb39-4a58-9fe9-0474d945a323"
 authors = ["vdayanand <venkatesh@juliacomputing.com>"]
 version = "0.1.0"

@@ -11,7 +11,7 @@ The following server methods must be implemented:
     - *invocation:* GET /pet/findByStatus
     - *signature:* find_pets_by_status(req::HTTP.Request, status::FindPetsByStatusStatusParameter;) -> FindPetsByStatusStatusParameter
 """
-module deep
+module deepserver
 
 using HTTP
 using URIs
