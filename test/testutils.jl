@@ -20,9 +20,8 @@ function run_server(script, flags=``)
     )
     iob = IOBuffer()
     pipelined_cmd = pipeline(srvrcmd, stdout=iob, stderr=iob)
-    @info("Launching ", script, srvrcmd)
-    ret = run(pipelined_cmd, wait=false)
-
+    @info("Launching ", script, srvrcmd, pipelined_cmd)
+    ret = run(pipelined_cmd, wait=true)
     return ret, iob
 end
 
